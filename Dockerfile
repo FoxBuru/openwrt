@@ -19,7 +19,4 @@ RUN apt update --fix-missing && apt install -y subversion \
 	fastjar \
 	java-propose-classpath \
 	python3-distutils
-
-RUN useradd -m -d /home/buildbot -U -s /bin/bash -u 20001 buildbot 
-
-USER buildbot
+	
