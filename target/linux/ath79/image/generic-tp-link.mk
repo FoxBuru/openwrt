@@ -152,7 +152,8 @@ define Device/tplink_eap245-v1
   DEVICE_VARIANT := v1
   LOADER_TYPE := elf
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
-  TPLINK_BOARD_ID := EAP245
+  TPLINK_BOARD_ID := EAP245-V1
+  BOARDNAME := EAP245-V1
   SUPPORTED_DEVICES += eap245
 endef
 TARGET_DEVICES += tplink_eap245-v1
