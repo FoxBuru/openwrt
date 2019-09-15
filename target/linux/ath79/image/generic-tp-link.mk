@@ -170,15 +170,15 @@ endef
 TARGET_DEVICES += tplink_cpe210-v1
 
 define Device/tplink_eap245-v1
-  #Use base format
   $(Device/tplink-safeloader)
   ATH_SOC := qca9563
-  DEVICE_TITLE := TP-Link EAP245 v1
-  LOADER_TYPE := elf
   IMAGE_SIZE := 15872k
+  DEVICE_MODEL := EAP245
+  DEVICE_VARIANT := v1
+  LOADER_TYPE := elf
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   TPLINK_BOARD_ID := EAP245
-  SUPPORTED_DEVICES := tplink,eap245-v1 eap245-v1
+  SUPPORTED_DEVICES += eap245
 endef
 TARGET_DEVICES += tplink_eap245-v1
 
