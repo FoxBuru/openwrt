@@ -19,9 +19,9 @@ steps:
   - mkdir -p /usr/src/openwrt-eap245
   - ./scripts/feeds update -a
   - ./scripts/feeds install -a
-  - make download
-  - wget -O ".config" https://gist.githubusercontent.com/FoxBuru/11c80bff55b58c47f3de2ec5ff57eb12/raw/7370b8b17c999687b63cc1fab2dab2bb553ba629/config-eap245v1
+  - wget -O ".config" https://gist.githubusercontent.com/FoxBuru/11c80bff55b58c47f3de2ec5ff57eb12/raw/1c35a6d5d5499e5c8251e90baf8d9b04401b2f76/config-eap245v1
   - make defconfig
+  - make download
   - make -j1 V=s
   - cp bin/* /usr/src/openwrt-eap245
   volumes:
