@@ -25,7 +25,7 @@ steps:
   - make download
   - chown -R buildbot:buildbot .
   - su --preserve-environment -c "make -j$(nproc)" buildbot
-  - cp bin/* /usr/src/openwrt-eap245
+  - cp -r bin/* /usr/src/openwrt-eap245
   volumes:
   - name: cache
     path: /usr/src
