@@ -1,0 +1,38 @@
+---
+kind: pipeline
+name: OpenWRT for EAP245
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build
+  build:
+    image: foxburu/image-builder
+    context: .
+    dockerfile: Dockerfile
+
+- name: Fetch and build OpenWRT
+  image: foxburu/image-builder
+  commands:
+  - mkdir -p /usr/src/openwrt-eap245
+  - ./scripts/feeds update -a
+  - ./scripts/feeds install -a
+  - make -j$(nproc)
+  volumes:
+  - name: cache
+    path: /usr/src
+
+volumes:
+- name: cache
+  host:
+    path: /usr/src
+
+trigger:
+  branch:
+  - master
+  event:
+  - push
+
+...
