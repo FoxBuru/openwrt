@@ -17,11 +17,12 @@ steps:
   image: foxburu/image-builder
   commands:
   - mkdir -p /usr/src/openwrt-eap245
-  - wget -O ".config" https://gist.githubusercontent.com/FoxBuru/11c80bff55b58c47f3de2ec5ff57eb12/raw/7370b8b17c999687b63cc1fab2dab2bb553ba629/config-eap245v1
   - ./scripts/feeds update -a
   - ./scripts/feeds install -a
   - make download
-  - make -j$(nproc)
+  - wget -O ".config" https://gist.githubusercontent.com/FoxBuru/11c80bff55b58c47f3de2ec5ff57eb12/raw/7370b8b17c999687b63cc1fab2dab2bb553ba629/config-eap245v1
+  - make defconfig
+  - make -j1 V=s
   - cp bin/* /usr/src/openwrt-eap245
   volumes:
   - name: cache
