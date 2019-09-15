@@ -1837,7 +1837,6 @@ static void build_image(const char *output,
 		parts[2] = tmp;
 		parts[1].size--;
 		parts[2].size--;
-	}
 	} else if (strcasecmp(info->id, "ARCHER-C6-V2") == 0) {
 		const char mdat[11] = {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00};
 		parts[5] = put_data("extra-para", mdat, 11);
