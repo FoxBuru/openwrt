@@ -12,7 +12,8 @@ RUN apt update --fix-missing && apt install -y subversion \
 	gettext \
 	unzip \
 	file \
-	libssl-dev wget \
+	libssl-dev \
+	wget \
 	libelf-dev \
 	ecj \
 	fastjar \
