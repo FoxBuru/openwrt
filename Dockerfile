@@ -1,6 +1,6 @@
 FROM debian:stable
 
-RUN apt install -y subversion \
+RUN apt update --fix-missing && apt install -y subversion \
 	g++ \
 	zlib1g-dev \
 	build-essential \
