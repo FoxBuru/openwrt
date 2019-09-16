@@ -170,7 +170,7 @@ endef
 TARGET_DEVICES += tplink_cpe210-v1
 
 define Device/tplink_eap245-v1
-  # $(Device/tplink-safeloader)
+  $(Device/tplink-safeloader)
   ATH_SOC := qca9563
   IMAGE_SIZE := 15872k
   DEVICE_MODEL := EAP245
@@ -180,9 +180,6 @@ define Device/tplink_eap245-v1
   TPLINK_BOARD_ID := EAP245-V1
   BOARDNAME := EAP245-V1
   KERNEL := kernel-bin | append-dtb | lzma | loader-kernel
-  IMAGES := sysupgrade.bin factory.bin
-  IMAGE/sysupgrade.bin := append-rootfs | tplink-safeloader sysupgrade
-  IMAGE/factory.bin := append-rootfs | tplink-safeloader factory
   SUPPORTED_DEVICES += eap245
 endef
 TARGET_DEVICES += tplink_eap245-v1
