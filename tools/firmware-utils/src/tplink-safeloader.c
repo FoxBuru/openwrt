@@ -271,7 +271,7 @@ static struct device_info boards[] = {
 		.last_sysupgrade_partition = "support-list",
 	},
 
-	/** Firmware layout for the CPE510/520 */
+	/** Firmware layout for the CPE510/520 V1 */
 	{
 		.id	= "CPE510",
 		.vendor	= "CPE510(TP-LINK|UN|N300-5):1.0\r\n",
@@ -284,17 +284,7 @@ static struct device_info boards[] = {
 			"CPE510(TP-LINK|EU|N300-5):1.1\r\n"
 			"CPE520(TP-LINK|UN|N300-5):1.1\r\n"
 			"CPE520(TP-LINK|US|N300-5):1.1\r\n"
-			"CPE520(TP-LINK|EU|N300-5):1.1\r\n"
-			"CPE510(TP-LINK|EU|N300-5|00000000):2.0\r\n"
-			"CPE510(TP-LINK|EU|N300-5|45550000):2.0\r\n"
-			"CPE510(TP-LINK|EU|N300-5|55530000):2.0\r\n"
-			"CPE510(TP-LINK|UN|N300-5|00000000):2.0\r\n"
-			"CPE510(TP-LINK|UN|N300-5|45550000):2.0\r\n"
-			"CPE510(TP-LINK|UN|N300-5|55530000):2.0\r\n"
-			"CPE510(TP-LINK|US|N300-5|55530000):2.0\r\n"
-			"CPE510(TP-LINK|UN|N300-5):2.0\r\n"
-			"CPE510(TP-LINK|EU|N300-5):2.0\r\n"
-			"CPE510(TP-LINK|US|N300-5):2.0\r\n",
+			"CPE520(TP-LINK|EU|N300-5):1.1\r\n",
 		.support_trail = '\xff',
 		.soft_ver = NULL,
 
@@ -451,6 +441,38 @@ static struct device_info boards[] = {
 			"WBS210(TP-LINK|UN|N300-2):1.20\r\n"
 			"WBS210(TP-LINK|US|N300-2):1.20\r\n"
 			"WBS210(TP-LINK|EU|N300-2):1.20\r\n",
+		.support_trail = '\xff',
+		.soft_ver = NULL,
+
+		.partitions = {
+			{"fs-uboot", 0x00000, 0x20000},
+			{"partition-table", 0x20000, 0x02000},
+			{"default-mac", 0x30000, 0x00020},
+			{"product-info", 0x31100, 0x00100},
+			{"signature", 0x32000, 0x00400},
+			{"os-image", 0x40000, 0x200000},
+			{"file-system", 0x240000, 0x570000},
+			{"soft-version", 0x7b0000, 0x00100},
+			{"support-list", 0x7b1000, 0x00400},
+			{"user-config", 0x7c0000, 0x10000},
+			{"default-config", 0x7d0000, 0x10000},
+			{"log", 0x7e0000, 0x10000},
+			{"radio", 0x7f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "support-list",
+	},
+
+	{
+		.id	= "WBS210V2",
+		.vendor	= "CPE510(TP-LINK|UN|N300-5):1.0\r\n",
+		.support_list =
+			"SupportList:\r\n"
+			"WBS210(TP-LINK|UN|N300-2|00000000):2.00\r\n"
+			"WBS210(TP-LINK|US|N300-2|55530000):2.00\r\n"
+			"WBS210(TP-LINK|EU|N300-2|45550000):2.00\r\n",
 		.support_trail = '\xff',
 		.soft_ver = NULL,
 
@@ -1714,11 +1736,12 @@ static struct image_partition_entry read_file(const char *part_name, const char 
 
 	size_t len = statbuf.st_size;
 
-	if (add_jffs2_eof)
+	if (add_jffs2_eof) {
 		if (file_system_partition)
 			len = ALIGN(len + file_system_partition->base, 0x10000) + sizeof(jffs2_eof_mark) - file_system_partition->base;
 		else
 			len = ALIGN(len, 0x10000) + sizeof(jffs2_eof_mark);
+	}
 
 	struct image_partition_entry entry = alloc_image_partition(part_name, len);
 
@@ -2075,7 +2098,7 @@ static int add_flash_partition(
 		unsigned long base,
 		unsigned long size)
 {
-	int ptr;
+	size_t ptr;
 	/* check if the list has a free entry */
 	for (ptr = 0; ptr < max_entries; ptr++, part_list++) {
 		if (part_list->name == NULL &&
@@ -2128,7 +2151,7 @@ static int read_partition_table(
 	if (fseek(file, offset, SEEK_SET) < 0)
 		error(1, errno, "Can not seek in the firmware");
 
-	if (fread(buf, 1, 2048, file) < 0)
+	if (fread(buf, 2048, 1, file) != 1)
 		error(1, errno, "Can not read fwup-ptn from the firmware");
 
 	buf[2047] = '\0';
@@ -2219,18 +2242,18 @@ static void write_partition(
 	fseek(input_file, entry->base + firmware_offset, SEEK_SET);
 
 	for (offset = 0; sizeof(buf) + offset <= entry->size; offset += sizeof(buf)) {
-		if (fread(buf, sizeof(buf), 1, input_file) < 0)
+		if (fread(buf, sizeof(buf), 1, input_file) != 1)
 			error(1, errno, "Can not read partition from input_file");
 
-		if (fwrite(buf, sizeof(buf), 1, output_file) < 0)
+		if (fwrite(buf, sizeof(buf), 1, output_file) != 1)
 			error(1, errno, "Can not write partition to output_file");
 	}
 	/* write last chunk smaller than buffer */
 	if (offset < entry->size) {
 		offset = entry->size - offset;
-		if (fread(buf, offset, 1, input_file) < 0)
+		if (fread(buf, offset, 1, input_file) != 1)
 			error(1, errno, "Can not read partition from input_file");
-		if (fwrite(buf, offset, 1, output_file) < 0)
+		if (fwrite(buf, offset, 1, output_file) != 1)
 			error(1, errno, "Can not write partition to output_file");
 	}
 }
@@ -2283,7 +2306,7 @@ static int extract_firmware(const char *input, const char *output_directory)
 		error(1, 0, "Error can not read the partition table (fwup-ptn)");
 	}
 
-	for (int i = 0; i < max_entries; i++) {
+	for (size_t i = 0; i < max_entries; i++) {
 		if (entries[i].name == NULL &&
 				entries[i].base == 0 &&
 				entries[i].size == 0)
@@ -2299,7 +2322,7 @@ static struct flash_partition_entry *find_partition(
 		struct flash_partition_entry *entries, size_t max_entries,
 		const char *name, const char *error_msg)
 {
-	for (int i = 0; i < max_entries; i++, entries++) {
+	for (size_t i = 0; i < max_entries; i++, entries++) {
 		if (strcmp(entries->name, name) == 0)
 			return entries;
 	}
@@ -2311,19 +2334,19 @@ static struct flash_partition_entry *find_partition(
 static void write_ff(FILE *output_file, size_t size)
 {
 	char buf[4096];
-	int offset;
+	size_t offset;
 
 	memset(buf, 0xff, sizeof(buf));
 
 	for (offset = 0; offset + sizeof(buf) < size ; offset += sizeof(buf)) {
-		if (fwrite(buf, sizeof(buf), 1, output_file) < 0)
+		if (fwrite(buf, sizeof(buf), 1, output_file) != 1)
 			error(1, errno, "Can not write 0xff to output_file");
 	}
 
 	/* write last chunk smaller than buffer */
 	if (offset < size) {
 		offset = size - offset;
-		if (fwrite(buf, offset, 1, output_file) < 0)
+		if (fwrite(buf, offset, 1, output_file) != 1)
 			error(1, errno, "Can not write partition to output_file");
 	}
 }

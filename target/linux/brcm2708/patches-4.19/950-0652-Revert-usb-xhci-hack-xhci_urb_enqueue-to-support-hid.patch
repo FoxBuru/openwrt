@@ -1,7 +1,7 @@
-From adeaf5a2d52777cb4e4de1b7ebaf525e9a7991b7 Mon Sep 17 00:00:00 2001
+From 5f6feeaf528cf922a82f11e5b0711f5fe9d7538d Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 7 Jun 2019 14:50:12 +0100
-Subject: [PATCH 652/782] Revert "usb: xhci: hack xhci_urb_enqueue to support
+Subject: [PATCH 652/806] Revert "usb: xhci: hack xhci_urb_enqueue to support
  hid.mousepoll behaviour"
 
 This reverts commit 1cf1071a79f320bc4497a3ade77431f04442eb17.
@@ -11,7 +11,7 @@ This reverts commit 1cf1071a79f320bc4497a3ade77431f04442eb17.
 
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -1416,87 +1416,6 @@ command_cleanup:
+@@ -1428,87 +1428,6 @@ command_cleanup:
  }
  
  /*
@@ -99,7 +99,7 @@ This reverts commit 1cf1071a79f320bc4497a3ade77431f04442eb17.
   * non-error returns are a promise to giveback() the urb later
   * we drop ownership so next owner (or urb unlink) can get it
   */
-@@ -1564,11 +1483,6 @@ static int xhci_urb_enqueue(struct usb_h
+@@ -1576,11 +1495,6 @@ static int xhci_urb_enqueue(struct usb_h
  		}
  	}
  

@@ -29,7 +29,6 @@
 			label = "ubnt:blue:dome";
 			gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
 		};
-
 	};
 
 	keys {
@@ -116,6 +115,6 @@
 
 &wmac {
 	status = "okay";
+
 	mtd-cal-data = <&eeprom 0x1000>;
-	mtd-mac-address = <&eeprom 0x0>;
 };
