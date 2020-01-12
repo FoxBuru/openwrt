@@ -148,14 +148,15 @@ define Device/tplink_eap245-v1
   $(Device/tplink-safeloader)
   ATH_SOC := qca9563
   IMAGE_SIZE := 15872k
-  DEVICE_MODEL := EAP245
-  DEVICE_VARIANT := v1
+  # DEVICE_MODEL := EAP245
+  DEVICE_TITLE := TP-Link EAP245 v1
+  # DEVICE_VARIANT := v1
   LOADER_TYPE := elf
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   TPLINK_BOARD_ID := EAP245-V1
   BOARDNAME := EAP245-V1
   KERNEL := kernel-bin | append-dtb | lzma | loader-kernel
-  SUPPORTED_DEVICES += eap245
+  SUPPORTED_DEVICES += eap245-v1
 endef
 TARGET_DEVICES += tplink_eap245-v1
 
