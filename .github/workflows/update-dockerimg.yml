@@ -4,7 +4,7 @@ on:
     push:
         paths:
             - "Dockerfile"
-            - ".github/workflows/update-dockering.yml"
+            - ".github/workflows/update-dockerimg.yml"
 
 jobs:
     publish-image:
