@@ -1,4 +1,5 @@
 FROM debian:stable
+LABEL maintainer="fox@fxb.mx"
 
 RUN apt update --fix-missing && apt install -y subversion \
 	g++ \
