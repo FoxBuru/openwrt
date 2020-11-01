@@ -18,7 +18,7 @@ jobs:
               id: meta
               uses: crazy-max/ghaction-docker-meta@v1
               with:
-                images: foxburu/builderimage
+                images: foxburu/openwrt/builderimage
                 tag-sha: true
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v1
@@ -38,7 +38,10 @@ jobs:
                 file: /tmp/builderimage/Dockerfile
                 platforms: linux/amd64
                 tags: ${{ steps.meta.outputs.tags }}
-                labels: ${{ steps.meta.outputs.labels }}
+                labels: |
+                  ${{ steps.meta.outputs.labels }}
+                  org.opencontainers.image.title=builderimage
+                  org.opencontainers.image.description=Custom image to build openwrt on a GHA
                 push: true
             - name: Image digest
               run: echo ${{ steps.docker_build.outputs.digest }}
