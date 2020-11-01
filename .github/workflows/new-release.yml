@@ -1,0 +1,28 @@
+name: "Compile new release"
+
+on:
+    schedule:
+        - cron: '50 22 01 11 *'
+    push:
+        tags:
+            - v19.07.*
+
+jobs:
+    build-openwrt:
+        name: Release
+        runs-on: ubuntu-latest
+        container:
+            image: ghcr.io/foxburu/openwrt/builderimage:master
+            credentials:
+                username: ${{ github.actor }}
+                password: ${{ secrets.CTOKEN }}
+            env:
+                GIST_NAME: config-eap245v1
+                UID: buildbot
+        steps:
+            - name: Get latest code
+              uses: actions/checkout@v2
+            - name: Check Env Variables
+              run: env
+            - name: Get all bins
+              run: ls -la /usr/bin
