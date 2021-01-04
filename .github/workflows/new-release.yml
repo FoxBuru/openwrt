@@ -14,8 +14,6 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.CTOKEN }}
-      env:
-        GIST_NAME: config-eap245v1
     steps:
       - name: Get latest code
         uses: actions/checkout@v2
@@ -27,6 +25,7 @@ jobs:
         id: gist
         env:
           GHAPI: https://api.github.com
+          GIST_NAME: config-eap245v1
           JQ_CMD: .[] | .files | with_entries(select(.key | contains("${{ env.GIST_NAME }}"))) | select(. != {}) | flatten | .[] | .raw_url
         shell: bash
         run: |
