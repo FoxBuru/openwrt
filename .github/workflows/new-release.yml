@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+env:
+  GIST_NAME: "config-eap245v1"
+
 jobs:
   build-openwrt:
     name: Release
@@ -25,13 +28,12 @@ jobs:
         id: gist
         env:
           GHAPI: https://api.github.com
-          GIST_NAME: config-eap245v1
-          JQ_CMD: ".[] | .files | with_entries(select(.key | contains(\"${GIST_NAME}\"))) | select(. != {}) | flatten | .[] | .raw_url"
+          JQ_CMD: ".[] | .files | with_entries(select(.key | contains(\"${{ env.GIST_NAME }}\"))) | select(. != {}) | flatten | .[] | .raw_url"
         shell: bash
         run: |
           GHRAW=$(curl \
               -H "Accept: application/vnd.github.v3+json" \
-              ${{ env.GHAPI }}/${{ github.actor }}/gists | jq '${{ env.JQ_CMD }}')
+              ${{ env.GHAPI }}/users/${{ github.actor }}/gists | jq '${{ env.JQ_CMD }}')
           echo "::set-output name=gisturl::$(echo $GHRAW)"
       - name: Fetch gist content
         run: curl -LJR -o .config ${{ steps.gist.outputs.gisturl }}
