@@ -54,18 +54,18 @@ jobs:
             draft: false
             prerelease: false
       - name: Upload factory
-        id: upload_assets
+        id: upload_factory
         uses: actions/upload-release-asset@v1
         with:
             upload_url: ${{ steps.create_rel.outputs.upload_url }}
             asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-factory.bin
             asset_name: openwrt-ath79-generic-tplink_eap245-v1-squashfs-factory.bin
             asset_content_type: application/octet-stream
-        - name: Upload factory
-          id: upload_assets
-          uses: actions/upload-release-asset@v1
-          with:
-            upload_url: ${{ steps.create_rel.outputs.upload_url }}
-            asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
-            asset_name: openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
-            asset_content_type: application/x-executable
+      - name: Upload sysupgrade
+        id: upload_sysupgrade
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_rel.outputs.upload_url }}
+          asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
+          asset_name: openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
+          asset_content_type: application/x-executable
