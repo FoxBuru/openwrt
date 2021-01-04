@@ -18,5 +18,7 @@ RUN apt update --fix-missing && apt install -y subversion \
 	ecj \
 	fastjar \
 	java-propose-classpath \
-	python3-distutils
+	python3-distutils \
+	curl \
+	jq
 	
