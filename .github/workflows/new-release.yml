@@ -1,0 +1,71 @@
+name: "Compile new release"
+
+on:
+  push:
+    tags:
+      - v19.07.*
+
+jobs:
+  build-openwrt:
+    name: Release
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/foxburu/openwrt/builderimage:master
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.CTOKEN }}
+      env:
+        GIST_NAME: config-eap245v1
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v2
+      - name: Feeds preparation and installation
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+      - name: Fetch gist config URL
+        id: gist
+        env:
+          GHAPI: https://api.github.com
+          JQ_CMD: .[] | .files | with_entries(select(.key | contains("${{ env.GIST_NAME }}"))) | select(. != {}) | flatten | .[] | .raw_url
+        shell: bash
+        run: |
+          GHRAW=$(curl \
+              -H "Accept: application/vnd.github.v3+json" \
+              ${{ env.GHAPI }}/${{ github.actor }}/gists | jq '${{ env.JQ_CMD }}')
+          echo "::set-output name=gisturl::$(echo $GHRAW)"
+      - name: Fetch gist content
+        run: curl -LJR -o .config ${{ steps.gist.outputs.gisturl }}
+      - name: Pre-build preparations
+        run: |
+          make defconfig
+          make download
+          mkdir -p /usr/src/openwrt-eap245
+      - name: Build new release
+        run: |
+          make -j$(nproc) V=s
+          cp -r bin/* /usr/src/openwrt-eap245
+      - name: Create new release
+        id: create_rel
+        uses: actions/create-release@v1
+        with:
+            tag_name: ${{ github.ref }}
+            release_name: OpenWRT for EAP245v1 - ${{ github.ref }}
+            draft: false
+            prerelease: false
+      - name: Upload factory
+        id: upload_factory
+        uses: actions/upload-release-asset@v1
+        with:
+            upload_url: ${{ steps.create_rel.outputs.upload_url }}
+            asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-factory.bin
+            asset_name: openwrt-ath79-generic-tplink_eap245-v1-squashfs-factory.bin
+            asset_content_type: application/octet-stream
+      - name: Upload sysupgrade
+        id: upload_sysupgrade
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_rel.outputs.upload_url }}
+          asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
+          asset_name: openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
+          asset_content_type: application/x-executable
