@@ -3,7 +3,7 @@ name: "Compile new release"
 on:
   push:
     tags:
-      - v19.07.*
+      - "v*"
 
 jobs:
   build-openwrt:
