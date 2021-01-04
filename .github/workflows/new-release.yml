@@ -54,6 +54,8 @@ jobs:
       - name: Create new release
         id: create_rel
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
             tag_name: ${{ github.ref }}
             release_name: OpenWRT for EAP245v1 - ${{ github.ref }}
@@ -62,6 +64,8 @@ jobs:
       - name: Upload factory
         id: upload_factory
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
             upload_url: ${{ steps.create_rel.outputs.upload_url }}
             asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-factory.bin
@@ -70,6 +74,8 @@ jobs:
       - name: Upload sysupgrade
         id: upload_sysupgrade
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_rel.outputs.upload_url }}
           asset_path: /usr/src/openwrt-eap245/targets/ath79/generic/openwrt-ath79-generic-tplink_eap245-v1-squashfs-sysupgrade.bin
