@@ -42,9 +42,14 @@ jobs:
           make defconfig
           make download
           mkdir -p /usr/src/openwrt-eap245
+      - name: Adjust permissions
+        run: | 
+          useradd -m -d /home/buildbot -U -s /bin/bash -u 20001 buildbot
+          chown -R buildbot:buildbot .
+          chown -R buildbot:buildbot /usr/src/openwrt-eap245
       - name: Build new release
         run: |
-          make -j$(nproc) V=s
+          su --preserve-environment -c "make -j$(nproc) V=s" buildbot
           cp -r bin/* /usr/src/openwrt-eap245
       - name: Create new release
         id: create_rel
